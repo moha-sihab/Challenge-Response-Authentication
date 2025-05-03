@@ -1,0 +1,6 @@
+@CramAuthApi_HostAddress = http://localhost:5112
+
+GET {{CramAuthApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
