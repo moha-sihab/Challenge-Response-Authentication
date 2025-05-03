@@ -168,3 +168,4 @@
 /Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/obj/Debug/net8.0/CramAuthApi.pdb
 /Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/obj/Debug/net8.0/CramAuthApi.genruntimeconfig.cache
 /Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/obj/Debug/net8.0/ref/CramAuthApi.dll
+/Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
