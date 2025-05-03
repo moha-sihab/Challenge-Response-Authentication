@@ -34,7 +34,25 @@ namespace CramAuthApi.Controllers
             return Ok(BaseResponse<List<UserDto>>.Ok(users));
         }
 
-        [HttpPost("register")]
+        [HttpGet("{id}", Name = "GetUserById")]
+        public IActionResult GetUser(int id)
+        {
+            var user = _context.Users.Find(id);
+
+            if (user == null)
+            {
+                return NotFound(BaseResponse<string>.Fail("User not found"));
+            }
+
+            return Ok(BaseResponse<object>.Ok(new
+            {
+                user.Id,
+                user.Username
+            }));
+        }
+
+
+        [HttpPost(Name = "register")]
         public IActionResult Register(RegisterUserDto dto)
         {
             try
@@ -104,6 +122,25 @@ namespace CramAuthApi.Controllers
                     exception = ex.Message,
                 }));
             }
+        }
+
+        [HttpPut("{id}/public-key")]
+        public IActionResult UpdatePublicKey(int id, [FromBody] UpdatePublicKeyDto dto)
+        {
+            var user = _context.Users.Find(id);
+            if (user == null)
+            {
+                return NotFound(BaseResponse<string>.Fail("User not found"));
+            }
+
+            user.PublicKey = dto.PublicKey;
+            _context.SaveChanges();
+
+            return Ok(BaseResponse<object>.Ok(new
+            {
+                user.Id,
+                user.PublicKey
+            }, "Public key updated successfully"));
         }
     }
 }
