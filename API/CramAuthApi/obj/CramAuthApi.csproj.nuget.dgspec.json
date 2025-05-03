@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/moha-sihab/CramAuthApi/CramAuthApi.csproj": {}
+    "/Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/CramAuthApi.csproj": {}
   },
   "projects": {
-    "/Users/moha-sihab/CramAuthApi/CramAuthApi.csproj": {
+    "/Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/CramAuthApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/moha-sihab/CramAuthApi/CramAuthApi.csproj",
+        "projectUniqueName": "/Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/CramAuthApi.csproj",
         "projectName": "CramAuthApi",
-        "projectPath": "/Users/moha-sihab/CramAuthApi/CramAuthApi.csproj",
+        "projectPath": "/Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/CramAuthApi.csproj",
         "packagesPath": "/Users/moha-sihab/.nuget/packages/",
-        "outputPath": "/Users/moha-sihab/CramAuthApi/obj/",
+        "outputPath": "/Users/moha-sihab/Documents/GitHub/CRAM/Challenge-Response-Authentication/API/CramAuthApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/moha-sihab/.nuget/NuGet/NuGet.Config"
@@ -46,6 +46,16 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.4, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
