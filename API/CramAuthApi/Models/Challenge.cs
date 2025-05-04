@@ -11,6 +11,8 @@ namespace CramAuthApi.Models
         public int UserId { get; set; }
         public string ChallengeText { get; set; } = string.Empty;
         public DateTime IssuedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime ExpiresAt { get; set; } = DateTime.UtcNow;
         public bool IsUsed { get; set; } = false;
 
         public User? User { get; set; }

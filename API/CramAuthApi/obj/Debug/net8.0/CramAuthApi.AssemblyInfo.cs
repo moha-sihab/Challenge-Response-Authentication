@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CramAuthApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e82d056d03d60555921c175a5a5dacbd5a7a5f2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc2505f8a2d39d7212345404fc2544bc8871fe9d")]
 [assembly: System.Reflection.AssemblyProductAttribute("CramAuthApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CramAuthApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
