@@ -5,6 +5,7 @@ using CramAuthApi.DTOs;
 using CramAuthApi.Helpers;
 using CramAuthApi.Models.Responses;
 using CramAuthApi.Helpers.CramAuthApi.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CramAuthApi.Controllers
 {
@@ -23,6 +24,7 @@ namespace CramAuthApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult GetUsers()
         {
             var users = _context.Users.Select(u => new UserDto
@@ -35,6 +37,7 @@ namespace CramAuthApi.Controllers
         }
 
         [HttpGet("{id}", Name = "GetUserById")]
+        [Authorize]
         public IActionResult GetUser(int id)
         {
             var user = _context.Users.Find(id);
@@ -110,9 +113,11 @@ namespace CramAuthApi.Controllers
 
                 var token = _jwt.GenerateToken(user.Id, user.Username);
 
-                return Ok(BaseResponse<object>.Ok(new
+                return Ok(BaseResponse<LoginDto>.Ok(new LoginDto
                 {
-                    token
+                    Token = token,
+                    Id = user.Id,
+                    Username = user.Username
                 }, "Login successfull"));
             }
             catch (Exception ex)
@@ -125,6 +130,7 @@ namespace CramAuthApi.Controllers
         }
 
         [HttpPut("{id}/public-key")]
+        [Authorize]
         public IActionResult UpdatePublicKey(int id, [FromBody] UpdatePublicKeyDto dto)
         {
             var user = _context.Users.Find(id);
