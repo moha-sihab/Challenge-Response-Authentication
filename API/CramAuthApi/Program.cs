@@ -36,6 +36,31 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<JwtTokenGenerator>();
+//builder.WebHost.UseUrls("http://0.0.0.0:5113", "https://0.0.0.0:7242");
+//builder.WebHost.UseUrls("https://localhost:7242", "http://localhost:5113");
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(7242, listenOptions =>
+    {
+       // listenOptions.UseHttps("/Users/moha-sihab/Documents/Cert/192.168.1.7.pem", "/Users/moha-sihab/Documents/Cert/192.168.1.7-key.pem");
+       listenOptions.UseHttps("/Users/moha-sihab/Documents/Cert/192.168.1.7.pfx", "Kulminasi");
+    });
+
+    options.ListenAnyIP(5112); // Optional: plain HTTP fallback
+});
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 
 var app = builder.Build();
 
@@ -45,6 +70,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 app.UseAuthentication(); 
