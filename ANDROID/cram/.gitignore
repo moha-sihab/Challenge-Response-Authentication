@@ -1,3 +1,4 @@
+app/src/main/res/raw/mkcert_root_ca.pem
 *.iml
 .gradle
 /local.properties
