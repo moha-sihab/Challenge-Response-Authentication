@@ -30,9 +30,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
+    viewModel: LoginViewModel = koinViewModel(),
     onLoginClick: () -> Unit,
     isLoading: Boolean = false,
     errorMessage: String? = null
@@ -82,7 +84,9 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
         
         Button(
-            onClick = onLoginClick,
+            onClick = {
+                viewModel.login("string","string")
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading
         ) {
@@ -106,5 +110,5 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
-    LoginScreen({})
+    //LoginScreen({})
 }
