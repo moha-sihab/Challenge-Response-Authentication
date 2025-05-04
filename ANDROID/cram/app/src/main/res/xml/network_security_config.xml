@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.1.7</domain>
+    </domain-config>
+    <base-config>
+        <trust-anchors>
+            <!-- Trust default system CA -->
+            <certificates src="system" />
+
+            <!-- Trust the mkcert CA cert inside res/raw -->
+            <certificates src="@raw/mkcert_root_ca" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
