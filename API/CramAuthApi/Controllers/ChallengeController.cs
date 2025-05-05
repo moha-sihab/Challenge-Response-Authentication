@@ -77,7 +77,8 @@ namespace CramAuthApi.Controllers
                 return NotFound(BaseResponse<string>.Fail("Challenge not found or already used"));
             }
 
-            if(DateTime.UtcNow > challenge.ExpiresAt){
+            if (DateTime.UtcNow > challenge.ExpiresAt)
+            {
                 return Unauthorized(BaseResponse<string>.Fail("Challenge expired"));
             }
 
@@ -100,9 +101,11 @@ namespace CramAuthApi.Controllers
 
             var token = _jwt.GenerateToken(user.Id, user.Username);
 
-            return Ok(BaseResponse<object>.Ok(new
+            return Ok(BaseResponse<object>.Ok(new LoginDto
             {
-                token
+                Token = token,
+                Id = user.Id,
+                Username = user.Username
             }, "Challenge verified successfully"));
 
 
