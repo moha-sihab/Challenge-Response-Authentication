@@ -59,7 +59,7 @@ namespace CramAuthApi.Controllers
             }, "Challenge create successfully"));
         }
 
-        [HttpPost("respond")]
+        [HttpPost("response")]
         public IActionResult VerifyChallenge([FromBody] ChallengeResponseDto dto)
         {
             var user = _context.Users.Find(dto.UserId);
