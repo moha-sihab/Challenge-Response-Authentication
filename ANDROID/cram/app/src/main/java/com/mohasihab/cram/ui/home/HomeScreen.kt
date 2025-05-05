@@ -1,5 +1,7 @@
 package com.mohasihab.cram.ui.home
 
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,17 +17,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
+import com.mohasihab.cram.core.helper.BiometricHelper
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel(),
     username: String,
-    onBiometricAuthClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val activity = context as FragmentActivity
+
+    LaunchedEffect(Unit) {
+        viewModel.checkToken()
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +64,22 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = onBiometricAuthClick,
+                onClick = {
+                    activity.let {
+                        BiometricHelper.authenticate(
+                            activity = it,
+                            onSuccess = {
+                                val publicKey = BiometricHelper.generateECDSAKeyPair()
+                                publicKey?.let { pub ->
+                                    val encoded = BiometricHelper.encodePublicKey(pub)
+                                    Log.d("Biometric", encoded)
+                                    viewModel.sendPublicKey(encoded)
+                                }
+                            },
+                            onError = { error -> Log.e("Biometric", error) }
+                        )
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
@@ -64,7 +93,10 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedButton(
-                onClick = onLogoutClick,
+                onClick ={
+                    viewModel.logout()
+                    onLogoutClick()
+                } ,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Logout")
@@ -76,5 +108,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomePreview() {
-    HomeScreen("sihab",{},{})
+   // HomeScreen("sihab",{},{})
 }

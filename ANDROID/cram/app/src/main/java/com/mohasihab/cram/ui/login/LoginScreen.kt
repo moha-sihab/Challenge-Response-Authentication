@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -19,6 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -35,13 +38,34 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
-    onLoginClick: () -> Unit,
-    isLoading: Boolean = false,
-    errorMessage: String? = null
+    onLoginSuccess: (username: String) -> Unit,
 ) {
+
+    val loginState by viewModel.loginState.collectAsState()
+    val isLoading = loginState is LoginState.Loading
+    val errorMessage = (loginState as? LoginState.Error)?.message
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable  { mutableStateOf("") }
     var passwordVisible by rememberSaveable  { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.checkLoginStatus()
+    }
+
+    when (loginState) {
+        is LoginState.Success -> {
+            val username = (loginState as LoginState.Success).username
+            onLoginSuccess(username)
+        }
+        is LoginState.Error -> {
+            errorMessage?.let {
+                Text(text = it, color = Color.Red)
+            }
+            viewModel.resetState()
+        }
+        else -> {}
+    }
+
 
     Column(
         modifier = Modifier
@@ -85,7 +109,7 @@ fun LoginScreen(
         
         Button(
             onClick = {
-                viewModel.login("string","string")
+                viewModel.login(username,password)
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading
@@ -100,15 +124,23 @@ fun LoginScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.Fingerprint,
+                contentDescription = "Biometric Icon",
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text("Login with Biometrics")
+        }
+
         errorMessage?.let {
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = it, color = Color.Red)
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() {
-    //LoginScreen({})
 }

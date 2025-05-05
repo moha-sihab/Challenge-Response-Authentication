@@ -23,13 +23,12 @@ fun NavHost(navController: NavHostController = rememberNavController()) {
         Screen.Login.route
     }
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Login.route) {
             var username by remember { mutableStateOf("") }
 
             LoginScreen(
-                onLoginClick = {
-                    // Simulate login
+                onLoginSuccess = {
                     navController.navigate(Screen.Home.createRoute(username)) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
@@ -45,7 +44,6 @@ fun NavHost(navController: NavHostController = rememberNavController()) {
 
             HomeScreen(
                 username = username,
-                onBiometricAuthClick = { /* TODO: Biometric Prompt */ },
                 onLogoutClick = {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }

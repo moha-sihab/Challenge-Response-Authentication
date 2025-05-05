@@ -1,7 +1,6 @@
 package com.mohasihab.cram
 
 import android.app.Application
-import com.mohasihab.cram.core.di.coreModule
 import com.mohasihab.cram.core.di.networkModule
 import com.mohasihab.cram.core.di.repositoryModule
 import com.mohasihab.cram.ui.di.viewModelModule
@@ -16,7 +15,6 @@ class MyApp : Application() {
             androidContext(this@MyApp)
             modules(
                 networkModule,
-                coreModule,
                 repositoryModule,
                 viewModelModule
             )

@@ -78,7 +78,7 @@ dependencies {
     implementation(libs.okhttp3.okhttp)
     implementation(libs.okhttp3.okhttp.logging)
 
-    implementation(libs.datastore.preferences)
+    implementation(libs.androidx.biometric)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

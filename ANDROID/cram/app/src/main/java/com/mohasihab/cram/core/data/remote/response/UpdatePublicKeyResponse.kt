@@ -2,11 +2,9 @@ package com.mohasihab.cram.core.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
-data class LoginResponse(
+data class UpdatePublicKeyResponse(
     @SerializedName("id")
     val id: Int? = null,
-    @SerializedName("username")
-    val username: String? = null,
-    @SerializedName("token")
-    val token: String? = null
+    @SerializedName("publicKey")
+    val publicKey: String? = null,
 )
