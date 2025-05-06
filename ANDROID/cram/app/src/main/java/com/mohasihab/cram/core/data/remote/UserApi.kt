@@ -13,5 +13,4 @@ interface UserApi {
         @Path("id") userId: Int,
         @Body publicKey: PublicKeyRequest
     ): BaseResponse<UpdatePublicKeyResponse>
-
 }

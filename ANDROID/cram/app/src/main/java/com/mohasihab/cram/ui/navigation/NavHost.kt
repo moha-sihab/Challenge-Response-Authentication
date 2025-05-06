@@ -16,12 +16,6 @@ import com.mohasihab.cram.ui.login.LoginScreen
 
 @Composable
 fun NavHost(navController: NavHostController = rememberNavController()) {
-    val username = "" //change real username
-    val startDestination = if (true) { //check login here
-        Screen.Home.createRoute(username)
-    } else {
-        Screen.Login.route
-    }
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Login.route) {
@@ -40,10 +34,7 @@ fun NavHost(navController: NavHostController = rememberNavController()) {
             route = Screen.Home.route,
             arguments = listOf(navArgument("username") { type = NavType.StringType })
         ) { backStackEntry ->
-            val username = backStackEntry.arguments?.getString("username") ?: "User"
-
             HomeScreen(
-                username = username,
                 onLogoutClick = {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }

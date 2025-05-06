@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,15 +31,17 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
-    username: String,
     onLogoutClick: () -> Unit
 ) {
     val context = LocalContext.current
     val activity = context as FragmentActivity
 
     LaunchedEffect(Unit) {
-        viewModel.checkToken()
+        viewModel.getUser()
     }
+
+    val state = viewModel.homeState.collectAsState()
+    val username = (state.value as? HomeState.Success)?.username ?: ""
 
     Box(
         modifier = Modifier
@@ -103,10 +106,4 @@ fun HomeScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomePreview() {
-   // HomeScreen("sihab",{},{})
 }
