@@ -8,11 +8,16 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import java.security.KeyPairGenerator
+import java.security.KeyStore
+import java.security.PrivateKey
 import java.security.PublicKey
+import java.security.Signature
 import java.security.spec.ECGenParameterSpec
 
 object BiometricHelper {
 
+    private const val ALIAS = "ecdsa_key"
+    private const val KEYSTORE="AndroidKeyStore"
     fun authenticate(
         activity: FragmentActivity,
         onSuccess: () -> Unit,
@@ -53,13 +58,13 @@ object BiometricHelper {
         biometricPrompt.authenticate(promptInfo)
     }
 
-    fun generateECDSAKeyPair(alias: String = "ecdsa_key"): PublicKey? {
+    fun generateECDSAKeyPair(): PublicKey? {
         val keyPairGenerator = KeyPairGenerator.getInstance(
-            KeyProperties.KEY_ALGORITHM_EC, "AndroidKeyStore"
+            KeyProperties.KEY_ALGORITHM_EC, KEYSTORE
         )
 
         val parameterSpec = KeyGenParameterSpec.Builder(
-            alias,
+            ALIAS,
             KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY
         )
             .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
@@ -74,5 +79,15 @@ object BiometricHelper {
 
     fun encodePublicKey(publicKey: PublicKey): String {
         return Base64.encodeToString(publicKey.encoded, Base64.NO_WRAP)
+    }
+
+    fun signData(data: ByteArray): ByteArray {
+        val keyStore = KeyStore.getInstance(KEYSTORE).apply { load(null) }
+        val privateKey = keyStore.getKey(ALIAS, null) as PrivateKey
+        val signature = Signature.getInstance("SHA256withECDSA").apply {
+            initSign(privateKey)
+            update(data)
+        }
+        return signature.sign()
     }
 }

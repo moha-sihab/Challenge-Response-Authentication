@@ -2,6 +2,7 @@ package com.mohasihab.cram.core.di
 
 import com.mohasihab.cram.BuildConfig
 import com.mohasihab.cram.core.data.local.PreferenceManager
+import com.mohasihab.cram.core.data.remote.ChallengeResponseApi
 import com.mohasihab.cram.core.data.remote.LoginApi
 import com.mohasihab.cram.core.data.remote.UserApi
 import com.mohasihab.cram.core.helper.AuthInterceptor
@@ -18,6 +19,7 @@ val networkModule = module {
     single { provideRetrofit(get()) }
     single<LoginApi> { get<Retrofit>().create(LoginApi::class.java) }
     single<UserApi> { get<Retrofit>().create(UserApi::class.java) }
+    single<ChallengeResponseApi> { get<Retrofit>().create(ChallengeResponseApi::class.java) }
 }
 
 fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
