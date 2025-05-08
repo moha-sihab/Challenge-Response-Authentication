@@ -83,13 +83,17 @@ namespace CramAuthApi.Controllers
             }
 
             var publicKeyBytes = Convert.FromBase64String(user.PublicKey);
-            using var ecdsa = ECDsa.Create();
-            ecdsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
-
             var challengeBytes = Encoding.UTF8.GetBytes(challenge.ChallengeText);
             var signatureBytes = Convert.FromBase64String(dto.Signature);
 
-            var isValid = ecdsa.VerifyData(challengeBytes, signatureBytes, HashAlgorithmName.SHA256);
+            using var rsa = RSA.Create();
+            rsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
+            bool isValid = rsa.VerifyData(
+                challengeBytes,
+                signatureBytes,
+                HashAlgorithmName.SHA256,
+                RSASignaturePadding.Pkcs1);
+
 
             if (!isValid)
             {
