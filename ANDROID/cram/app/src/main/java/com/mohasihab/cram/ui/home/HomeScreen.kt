@@ -72,8 +72,9 @@ fun HomeScreen(
                         BiometricHelper.authenticate(
                             activity = it,
                             onSuccess = {
-                                val publicKey = BiometricHelper.generateECDSAKeyPair()
-                                publicKey?.let { pub ->
+                                BiometricHelper.deleteKey()
+                                val publicKey = BiometricHelper.generateRSAKeyPair()
+                                publicKey.let { pub ->
                                     val encoded = BiometricHelper.encodePublicKey(pub)
                                     Log.d("Biometric", encoded)
                                     viewModel.sendPublicKey(encoded)
