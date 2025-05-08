@@ -138,10 +138,9 @@ fun LoginScreen(
                     BiometricHelper.authenticate(
                         activity = it,
                         onSuccess = {
-                            val publicKey = BiometricHelper.generateECDSAKeyPair()
-                            publicKey?.let { pub ->
+
                                 viewModel.onBiometricSuccess()
-                            }
+
                         },
                         onError = { error -> Log.e("Biometric", error) }
                     )

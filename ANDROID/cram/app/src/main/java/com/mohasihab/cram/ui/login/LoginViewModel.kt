@@ -1,6 +1,7 @@
 package com.mohasihab.cram.ui.login
 
 import android.util.Base64
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mohasihab.cram.core.data.interfaces.ChallengeRepositoryContract
@@ -8,7 +9,7 @@ import com.mohasihab.cram.core.data.interfaces.LoginRepositoryContract
 import com.mohasihab.cram.core.data.local.PreferenceManager
 import com.mohasihab.cram.core.data.remote.request.ChallengeResponseRequest
 import com.mohasihab.cram.core.data.remote.request.LoginRequest
-import com.mohasihab.cram.core.helper.BiometricHelper.signData
+import com.mohasihab.cram.core.helper.BiometricHelper.signDataWithRSA
 import com.mohasihab.cram.core.helper.PreferenceKeys
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,34 +74,45 @@ class LoginViewModel(
                 var userId = preferenceManager.getInt(PreferenceKeys.User.USERID)
                 if (userId != null){
                     val challenge = challengeRepository.createChallenge(userId)
-                    val signed = challenge.data?.challengeText?.toByteArray()?.let { signData(it) }
-                    val signatureBase64 = Base64.encodeToString(signed, Base64.NO_WRAP)
+                    val challengeText = challenge.data?.challengeText
 
-                    val response = challenge.data?.id?.let {
-                        challengeRepository.responseChallenge(
-                            ChallengeResponseRequest(
-                                challengeId = it,
-                                signature = signatureBase64,
-                                userId = userId
+                    if(challengeText != null){
+                        val challengeBytes =challengeText.toByteArray(Charsets.UTF_8)
+                        val signed = signDataWithRSA(challengeBytes)
+                        val signatureBase64 = Base64.encodeToString(signed, Base64.NO_WRAP)
+
+                        Log.d("CRAM", "challengeText: $challengeText")
+                        Log.d("CRAM", "signed (Base64): $signatureBase64")
+
+                        val response = challenge.data.id?.let {
+                            challengeRepository.responseChallenge(
+                                ChallengeResponseRequest(
+                                    challengeId = it,
+                                    signature = signatureBase64,
+                                    userId = userId
+                                )
                             )
-                        )
-                    }
-
-                    if(response?.success == true){
-                        response.data?.token.let { token ->
-                            if(token != null){
-                                preferenceManager.setString(PreferenceKeys.Auth.ACCESS_TOKEN,token)
-                            }
                         }
 
-                        preferenceManager.setInt(PreferenceKeys.User.USERID,response.data?.id ?: 0)
-                        preferenceManager.setString(PreferenceKeys.User.USERNAME,response.data?.username ?: "")
+                        if(response?.success == true){
+                            response.data?.token.let { token ->
+                                if(token != null){
+                                    preferenceManager.setString(PreferenceKeys.Auth.ACCESS_TOKEN,token)
+                                }
+                            }
 
-                        _loginState.value = LoginState.Success(response.data?.username ?: "")
+                            preferenceManager.setInt(PreferenceKeys.User.USERID,response.data?.id ?: 0)
+                            preferenceManager.setString(PreferenceKeys.User.USERNAME,response.data?.username ?: "")
+
+                            _loginState.value = LoginState.Success(response.data?.username ?: "")
+                        }
+                        else{
+                            _loginState.value = LoginState.Error(response?.message ?: "Unknown Error")
+                        }
+                    }else{
+                        _loginState.value = LoginState.Error("Challenge text is empty")
                     }
-                    else{
-                        _loginState.value = LoginState.Error(response?.message ?: "Unknown Error")
-                    }
+
                 }
 
             } catch (e: Exception) {

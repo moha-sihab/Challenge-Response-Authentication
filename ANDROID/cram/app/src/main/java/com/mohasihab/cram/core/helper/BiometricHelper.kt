@@ -12,11 +12,10 @@ import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.Signature
-import java.security.spec.ECGenParameterSpec
 
 object BiometricHelper {
 
-    private const val ALIAS = "ecdsa_key"
+    private const val ALIAS = "rsa_key"
     private const val KEYSTORE="AndroidKeyStore"
     fun authenticate(
         activity: FragmentActivity,
@@ -58,36 +57,49 @@ object BiometricHelper {
         biometricPrompt.authenticate(promptInfo)
     }
 
-    fun generateECDSAKeyPair(): PublicKey? {
-        val keyPairGenerator = KeyPairGenerator.getInstance(
-            KeyProperties.KEY_ALGORITHM_EC, KEYSTORE
-        )
-
+    fun generateRSAKeyPair(): PublicKey {
+        val keyPairGenerator = KeyPairGenerator.getInstance("RSA", KEYSTORE)
         val parameterSpec = KeyGenParameterSpec.Builder(
             ALIAS,
             KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY
         )
-            .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
             .setDigests(KeyProperties.DIGEST_SHA256)
-            .setUserAuthenticationRequired(false) // or true if you want to bind to biometrics
+            .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
+            .setUserAuthenticationRequired(false)
             .build()
 
         keyPairGenerator.initialize(parameterSpec)
-
         return keyPairGenerator.generateKeyPair().public
+    }
+
+    fun signDataWithRSA(data: ByteArray): ByteArray {
+        try {
+            val keyStore = KeyStore.getInstance(KEYSTORE).apply { load(null) }
+            val privateKey = keyStore.getKey(ALIAS, null) as PrivateKey
+            val signature = Signature.getInstance("SHA256withRSA").apply {
+                initSign(privateKey)
+                update(data)
+            }
+            return signature.sign()
+        }
+        catch (ex : Exception){
+            Log.d("CRAM","Exception in signDataWithRSA : ${ex.message}")
+            return ByteArray(0)
+        }
+
     }
 
     fun encodePublicKey(publicKey: PublicKey): String {
         return Base64.encodeToString(publicKey.encoded, Base64.NO_WRAP)
     }
 
-    fun signData(data: ByteArray): ByteArray {
+    fun deleteKey() {
         val keyStore = KeyStore.getInstance(KEYSTORE).apply { load(null) }
-        val privateKey = keyStore.getKey(ALIAS, null) as PrivateKey
-        val signature = Signature.getInstance("SHA256withECDSA").apply {
-            initSign(privateKey)
-            update(data)
+        if (keyStore.containsAlias(ALIAS)) {
+            keyStore.deleteEntry(ALIAS)
+            Log.d("Biometric", "Key with alias '$ALIAS' has been deleted.")
+        } else {
+            Log.d("Biometric", "No key with alias '$ALIAS' found.")
         }
-        return signature.sign()
     }
 }
