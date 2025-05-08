@@ -8,12 +8,11 @@ The backend is built with C# using .NET Framework.
 - Kotlin
 - Jetpack Compose
 - Biometric API
-- Retrofit & OkHttp
 
 
 **Backend:**
 - C#
-- .NET Framework
+- .NET 8
 - Entity Framework
 
 ## Introduction
