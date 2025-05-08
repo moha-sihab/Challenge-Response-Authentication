@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class LoginResponse(
     @SerializedName("id")
-    val id: Int? = null,
+    val id: Int?,
     @SerializedName("username")
-    val username: String? = null,
+    val username: String?,
     @SerializedName("token")
-    val token: String? = null
+    val token: String?
 )

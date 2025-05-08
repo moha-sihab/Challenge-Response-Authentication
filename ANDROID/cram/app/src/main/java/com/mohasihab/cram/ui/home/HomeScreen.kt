@@ -15,10 +15,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,25 +29,50 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.mohasihab.cram.core.helper.BiometricHelper
+import com.mohasihab.cram.core.helper.UiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
+    snackBarHostState: SnackbarHostState,
+    onLogoutClick: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-    onLogoutClick: () -> Unit
 ) {
     val context = LocalContext.current
     val activity = context as FragmentActivity
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.getUser()
     }
 
     val state = viewModel.homeState.collectAsState()
-    val username = (state.value as? HomeState.Success)?.username ?: ""
+    val publicKey = state.value.successPublicKey
+    var username = ""
+    when(state.value.uiState){
+        is UiState.Success -> {
+            username = (state.value.uiState as UiState.Success).data
+        }
+        else -> {
+        }
+    }
+
+    LaunchedEffect(state.value.successPublicKey) {
+        if(publicKey){
+            scope.launch {
+                snackBarHostState.showSnackbar("Generate Public Key Success")
+            }
+            delay(200)
+        }
+
+    }
+
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(24.dp),
         contentAlignment = Alignment.Center
@@ -76,7 +104,6 @@ fun HomeScreen(
                                 val publicKey = BiometricHelper.generateRSAKeyPair()
                                 publicKey.let { pub ->
                                     val encoded = BiometricHelper.encodePublicKey(pub)
-                                    Log.d("Biometric", encoded)
                                     viewModel.sendPublicKey(encoded)
                                 }
                             },

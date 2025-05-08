@@ -73,7 +73,7 @@ builder.WebHost.ConfigureKestrel(options =>
     options.ListenAnyIP(7242, listenOptions =>
     {
         // listenOptions.UseHttps("/Users/moha-sihab/Documents/Cert/192.168.1.7.pem", "/Users/moha-sihab/Documents/Cert/192.168.1.7-key.pem");
-        listenOptions.UseHttps("/Users/moha-sihab/Documents/Cert/192.168.1.7.pfx", "Kulminasi");
+      
     });
 
     options.ListenAnyIP(5112); // Optional: plain HTTP fallback
