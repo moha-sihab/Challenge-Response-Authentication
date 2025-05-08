@@ -19,12 +19,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,23 +35,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import com.mohasihab.cram.core.data.remote.response.BaseResponse
+import com.mohasihab.cram.core.data.remote.response.LoginResponse
 import com.mohasihab.cram.core.helper.BiometricHelper
+import com.mohasihab.cram.core.helper.UiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = koinViewModel(),
+    snackBarHostState: SnackbarHostState,
     onLoginSuccess: (username: String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     val activity = context as FragmentActivity
 
+    val scope = rememberCoroutineScope()
+
     val loginState by viewModel.loginState.collectAsState()
-    val isLoading = loginState is LoginState.Loading
-    val errorMessage = (loginState as? LoginState.Error)?.message
+    var isLoading = false
+    var errorMessage : String? = null
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable  { mutableStateOf("") }
     var passwordVisible by rememberSaveable  { mutableStateOf(false) }
@@ -58,23 +68,39 @@ fun LoginScreen(
         viewModel.checkLoginStatus()
     }
 
-    when (loginState) {
-        is LoginState.Success -> {
-            val username = (loginState as LoginState.Success).username
-            onLoginSuccess(username)
-        }
-        is LoginState.Error -> {
-            errorMessage?.let {
-                Text(text = it, color = Color.Red)
+    LaunchedEffect(loginState.uiState) {
+        when(loginState.uiState){
+            is UiState.Success -> {
+                isLoading = false
+                val username = (loginState.uiState as UiState.Success<BaseResponse<LoginResponse>>).data.data?.username ?: ""
+                scope.launch {
+                    snackBarHostState.showSnackbar("Hi $username, Login Success")
+                }
+                delay(200)
+                onLoginSuccess(username)
             }
-            viewModel.resetState()
+            is UiState.Error-> {
+                isLoading = false
+                errorMessage = (loginState.uiState as UiState.Error).message
+                scope.launch {
+                    snackBarHostState.showSnackbar("Error: $errorMessage")
+                }
+                viewModel.resetState()
+            }
+            is UiState.Loading -> {
+                isLoading = true
+            }
+            else -> {
+                isLoading = false
+                errorMessage = null
+            }
         }
-        else -> {}
+
     }
 
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,

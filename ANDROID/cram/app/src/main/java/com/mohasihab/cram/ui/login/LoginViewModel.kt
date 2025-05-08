@@ -9,8 +9,11 @@ import com.mohasihab.cram.core.data.interfaces.LoginRepositoryContract
 import com.mohasihab.cram.core.data.local.PreferenceManager
 import com.mohasihab.cram.core.data.remote.request.ChallengeResponseRequest
 import com.mohasihab.cram.core.data.remote.request.LoginRequest
+import com.mohasihab.cram.core.data.remote.response.BaseResponse
+import com.mohasihab.cram.core.data.remote.response.LoginResponse
 import com.mohasihab.cram.core.helper.BiometricHelper.signDataWithRSA
 import com.mohasihab.cram.core.helper.PreferenceKeys
+import com.mohasihab.cram.core.helper.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -21,11 +24,11 @@ class LoginViewModel(
     private val challengeRepository: ChallengeRepositoryContract,
     private val preferenceManager: PreferenceManager
 ) : ViewModel() {
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
+    private val _loginState : MutableStateFlow<LoginState> = MutableStateFlow(LoginState())
     val loginState : StateFlow<LoginState> = _loginState
 
     fun login(username : String, password : String){
-        _loginState.value = LoginState.Loading
+        _loginState.value = _loginState.value.copy(uiState = UiState.Loading)
         viewModelScope.launch {
             val loginRequest = LoginRequest(username=username,password=password)
             val response = loginRepository.login(loginRequest)
@@ -39,16 +42,16 @@ class LoginViewModel(
                 preferenceManager.setInt(PreferenceKeys.User.USERID,response.data?.id ?: 0)
                 preferenceManager.setString(PreferenceKeys.User.USERNAME,response.data?.username ?: "")
 
-                _loginState.value = LoginState.Success(response.data?.username ?: "")
+                _loginState.value =_loginState.value.copy(uiState = UiState.Success(response))
             }
             else{
-                _loginState.value = LoginState.Error(response.message ?: "Unknown Error")
+                _loginState.value =_loginState.value.copy(uiState = UiState.Error(response.message ?: "Unknown Error"))
             }
         }
     }
 
     fun resetState() {
-        _loginState.value = LoginState.Idle
+        _loginState.value = _loginState.value.copy(uiState = UiState.Idle)
     }
 
     fun checkLoginStatus() {
@@ -59,16 +62,18 @@ class LoginViewModel(
             val username = preferenceManager.getStringFlow(PreferenceKeys.User.USERNAME)
                 .firstOrNull()
 
+            val userId = preferenceManager.getIntFlow(PreferenceKeys.User.USERID).firstOrNull()
+
             if (token != null) {
-                _loginState.value = LoginState.Success(username ?: "")
+                _loginState.value = _loginState.value.copy(uiState = UiState.Success(BaseResponse(data = LoginResponse(token = token, username = username, id = userId))))
             } else {
-                _loginState.value = LoginState.Idle
+                _loginState.value = _loginState.value.copy(uiState = UiState.Idle)
             }
         }
     }
 
     fun onBiometricSuccess() {
-        _loginState.value = LoginState.Loading
+        _loginState.value = _loginState.value.copy(uiState = UiState.Loading)
         viewModelScope.launch {
             try {
                 var userId = preferenceManager.getInt(PreferenceKeys.User.USERID)
@@ -104,27 +109,24 @@ class LoginViewModel(
                             preferenceManager.setInt(PreferenceKeys.User.USERID,response.data?.id ?: 0)
                             preferenceManager.setString(PreferenceKeys.User.USERNAME,response.data?.username ?: "")
 
-                            _loginState.value = LoginState.Success(response.data?.username ?: "")
+                            _loginState.value =_loginState.value.copy(uiState = UiState.Success(response))
                         }
                         else{
-                            _loginState.value = LoginState.Error(response?.message ?: "Unknown Error")
+                            _loginState.value =_loginState.value.copy(uiState = UiState.Error(response?.message ?: "Unknown Error"))
                         }
                     }else{
-                        _loginState.value = LoginState.Error("Challenge text is empty")
+                        _loginState.value =_loginState.value.copy(uiState = UiState.Error("Challenge text is empty"))
                     }
 
                 }
 
             } catch (e: Exception) {
-                _loginState.value = LoginState.Error(e.message.toString())
+                _loginState.value =_loginState.value.copy(uiState = UiState.Error(e.message ?: "Unknown Error"))
             }
         }
     }
 }
 
-sealed class LoginState {
-    object Idle : LoginState()
-    object Loading : LoginState()
-    data class Success(val username: String) : LoginState()
-    data class Error(val message: String) : LoginState()
-}
+data class LoginState(
+    val uiState: UiState<BaseResponse<LoginResponse>> = UiState.Idle,
+)
