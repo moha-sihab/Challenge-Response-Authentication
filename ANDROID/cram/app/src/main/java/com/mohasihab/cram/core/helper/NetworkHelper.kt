@@ -1,10 +1,13 @@
 package com.mohasihab.cram.core.helper
 
 import com.mohasihab.cram.BuildConfig
+import com.mohasihab.cram.core.data.remote.response.BaseResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 object NetworkHelper {
@@ -46,4 +49,21 @@ object NetworkHelper {
                 .build()
         }
     }
+    suspend fun <T> safeApiCall(apiCall: suspend () -> BaseResponse<T>): BaseResponse<T> {
+        return try {
+            apiCall()
+        } catch (e: HttpException) {
+            val errorMsg = when (e.code()) {
+                401 -> "Unauthorized. Invalid or expired credentials."
+                403 -> "Forbidden. Access denied."
+                else -> "Server error: ${e.message()}"
+            }
+            BaseResponse.failed(errorMsg)
+        } catch (e: IOException) {
+            BaseResponse.failed("Network error: ${e.localizedMessage}")
+        } catch (e: Exception) {
+            BaseResponse.failed("Unexpected error: ${e.localizedMessage}")
+        }
+    }
+
 }

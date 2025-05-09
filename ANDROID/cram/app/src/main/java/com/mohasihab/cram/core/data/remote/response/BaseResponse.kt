@@ -10,5 +10,15 @@ data class BaseResponse<T>(
 	@SerializedName("message")
 	val message: String? = null,
 	@SerializedName("errors")
-	val errors: Any? = null
-)
+	val errors: String? = null
+){
+	companion object {
+		fun <T> failed(error: String?): BaseResponse<T> {
+			return BaseResponse(
+				success = false,
+				message = error,
+				errors = error
+			)
+		}
+	}
+}
