@@ -55,7 +55,7 @@ namespace CramAuthApi.Controllers
         }
 
 
-        [HttpPost(Name = "register")]
+        [HttpPost("register")]
         public IActionResult Register(RegisterUserDto dto)
         {
             try
