@@ -23,3 +23,11 @@ For the frontend (Android), I created a simple login app using Kotlin and Jetpac
 
 ## Flow
 
+How does CRAM (Challenge-Response Authentication Mechanism) work in this project?
+
+The approach follows a pattern commonly seen in apps that support biometric authentication. It begins with an "initiation" phase—typically found in the app’s settings or configuration menu—where the user enables biometric login.
+
+Here is the initial flow:
+
+![Initial Flow](https://raw.githubusercontent.com/moha-sihab/Challenge-Response-Authentication/refs/heads/main/ss/init.jpg)
+
