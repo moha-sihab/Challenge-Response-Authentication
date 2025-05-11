@@ -67,3 +67,13 @@ In the `Challenges` table, I added `UserId` as a foreign key that links to the `
 This table stores a new entry each time a user requests a challenge. A random string is generated and saved in the `ChallengeText` column. 
 I also included the `ExpiresAt` column to define the expiration time for each challenge, ensuring that challenges are time-bound and valid only for a limited period.
 
+### API
+After completing the database structure for this project, I built a simple set of APIs using C# and the .NET Framework.
+
+These are the endpoints:
+
+![API](https://raw.githubusercontent.com/moha-sihab/Challenge-Response-Authentication/refs/heads/main/ss/api.png)
+
+I created two endpoints related to authentication. The first one handles login with a username and password, and the second implements challenge-response authentication, as shown in the 'Challenge' API section.
+
+
