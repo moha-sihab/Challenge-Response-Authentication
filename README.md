@@ -55,3 +55,15 @@ Here is the authentication flow:
 3. The backend responds with a random string (challenge) to be signed using the previously stored private key.
 4. The app signs the challenge using the previously stored private key with the RSA algorithm and sends it back to the backend for verification.
 5. The backend verifies the signed challenge using the RSA algorithm with the public key previously stored and associated with the user ID. If the signature is valid, the backend generates an authentication token.
+
+### Database
+For the database, I used **SQL Server**. The structure is simple and consists of two tables: `User` and `Challenges`.
+
+Here is the table structure:
+![Table Structure](https://raw.githubusercontent.com/moha-sihab/Challenge-Response-Authentication/refs/heads/main/ss/table.png)
+
+In the `User` table, I added a `PublicKey` column to store the public key generated using the RSA algorithm during the initial flow.
+In the `Challenges` table, I added `UserId` as a foreign key that links to the `User` table. 
+This table stores a new entry each time a user requests a challenge. A random string is generated and saved in the `ChallengeText` column. 
+I also included the `ExpiresAt` column to define the expiration time for each challenge, ensuring that challenges are time-bound and valid only for a limited period.
+
