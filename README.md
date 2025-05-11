@@ -76,4 +76,16 @@ These are the endpoints:
 
 I created two endpoints related to authentication. The first one handles login with a username and password, and the second implements challenge-response authentication, as shown in the 'Challenge' API section.
 
+### Front-End (Android)
+For the Android app, I created a simple application using Kotlin and Jetpack Compose to simulate two authentication methods: 
+- username-password 
+- challenge-response mechanism.
+- 
+So, coming back to the overall flow, you can now visualize how the initial flow and authentication flow (explained earlier in this document) fit together.
+
+![APP](https://raw.githubusercontent.com/moha-sihab/Challenge-Response-Authentication/refs/heads/main/ss/appfront.jpg)
+
+<img src="https://raw.githubusercontent.com/moha-sihab/Challenge-Response-Authentication/refs/heads/main/ss/vid.gif" alt="AppGif" width="600"/>
+
+
 
