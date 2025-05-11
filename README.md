@@ -13,7 +13,6 @@ The backend is built with C# using .NET Framework.
 **Backend:**
 - C#
 - .NET 8
-- Entity Framework
 
 ## Introduction
 The idea for this project came from a random thought I had when I was assigned a task to implement biometric authentication. 
@@ -32,7 +31,7 @@ In the next section, you'll learn more about what a key pair is and how it’s u
 
 How does CRAM (Challenge-Response Authentication Mechanism) work in this project?
 
-The approach follows a pattern commonly seen in apps that support biometric authentication. It begins with an "initiation" phase—typically found in the app’s settings or configuration menu—where the user enables biometric login.
+The approach follows a pattern commonly seen in apps that support biometric authentication. It begins with an "initiation" phase (typically found in the app’s settings or configuration menu) where the user enables biometric login.
 
 Here is the initial flow:
 
@@ -56,7 +55,7 @@ Here is the authentication flow:
 4. The app signs the challenge using the previously stored private key with the RSA algorithm and sends it back to the backend for verification.
 5. The backend verifies the signed challenge using the RSA algorithm with the public key previously stored and associated with the user ID. If the signature is valid, the backend generates an authentication token.
 
-### Database
+## Database
 For the database, I used **SQL Server**. The structure is simple and consists of two tables: `User` and `Challenges`.
 
 Here is the table structure:
@@ -67,7 +66,7 @@ In the `Challenges` table, I added `UserId` as a foreign key that links to the `
 This table stores a new entry each time a user requests a challenge. A random string is generated and saved in the `ChallengeText` column. 
 I also included the `ExpiresAt` column to define the expiration time for each challenge, ensuring that challenges are time-bound and valid only for a limited period.
 
-### API
+## API
 After completing the database structure for this project, I built a simple set of APIs using C# and the .NET Framework.
 
 These are the endpoints:
@@ -76,16 +75,21 @@ These are the endpoints:
 
 I created two endpoints related to authentication. The first one handles login with a username and password, and the second implements challenge-response authentication, as shown in the 'Challenge' API section.
 
-### Front-End (Android)
+## Front-End (Android)
 For the Android app, I created a simple application using Kotlin and Jetpack Compose to simulate two authentication methods: 
 - username-password 
 - challenge-response mechanism.
-- 
+  
 So, coming back to the overall flow, you can now visualize how the initial flow and authentication flow (explained earlier in this document) fit together.
 
 ![APP](https://raw.githubusercontent.com/moha-sihab/Challenge-Response-Authentication/refs/heads/main/ss/appfront.jpg)
 
 <img src="https://raw.githubusercontent.com/moha-sihab/Challenge-Response-Authentication/refs/heads/main/ss/vid.gif" alt="AppGif" width="600"/>
 
+## Next
+
+For improvement, I plan to improve the security aspect of the challenge creation process.
+
+Right now, the challenge is tied to the `userId`, but it would be more secure to use a `deviceId` instead. This way, each challenge is linked to a specific device, not just the user, which helps prevent misuse or replay attacks.
 
 
