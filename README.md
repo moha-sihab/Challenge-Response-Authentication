@@ -17,9 +17,16 @@ The backend is built with C# using .NET Framework.
 
 ## Introduction
 The idea for this project came from a random thought I had when I was assigned a task to implement biometric authentication. 
+
 The question was: Is it possible to log in using biometrics securely without revoking or refreshing tokens? And can biometrics replace username-password authentication to simplify the login process? The answer is yes, it’s possible. But is it secure? That’s what I wanted to explore. 
+
 So, I elaborated on my idea using the Challenge-Response Authentication Mechanism (CRAM). As a starting point, I built a simple backend API using C# and .NET, which includes basic login functionality and an endpoint to simulate the challenge-response mechanism.
+
 For the frontend (Android), I created a simple login app using Kotlin and Jetpack Compose. The app offers an option to log in using biometrics, implementing the CRAM approach.
+
+The core concept of this project revolves around the use of an RSA-generated key pair (private and public keys). The client (Android app) holds the private key, securely stored in the Keystore, while the server stores the associated public key. These keys are mathematically linked, allowing the app to sign data and the server to verify it, without ever sharing sensitive credentials.
+
+In the next section, you'll learn more about what a key pair is and how it’s used in this project.
 
 ## Flow
 
